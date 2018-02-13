@@ -17,9 +17,9 @@ class vector3 {
 		void setX(long double x) { components[0] = x; };
 		void setY(long double y) { components[1] = y; };
 		void setZ(long double z) { components[2] = z; };
-		long double getX() { return components[0]; };
-		long double getY() { return components[1]; };
-		long double getZ() { return components[2]; };
+		const long double getX() const { return components[0]; };
+		const long double getY() const { return components[1]; };
+		const long double getZ() const { return components[2]; };
 
 		/* Vector Operators */
 		vector3& operator= (const vector3& rhs) {
