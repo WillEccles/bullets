@@ -1,6 +1,8 @@
 #ifndef VECTOR3_H
 #define VECTOR3_H
 
+#include <cmath>
+
 class vector3 {
 	private:
 		// x, y, z (z being "up")
@@ -20,6 +22,11 @@ class vector3 {
 		const long double getX() const { return components[0]; };
 		const long double getY() const { return components[1]; };
 		const long double getZ() const { return components[2]; };
+
+		/* Utility */
+		long double getElevationRads() { // get the vector's X/Z angle of elevation in radians
+			return atan(getZ()/getX());
+		};
 
 		/* Vector Operators */
 		vector3& operator= (const vector3& rhs) {
@@ -51,6 +58,23 @@ class vector3 {
 			result -= rhs;
 			return result;
 		};
+		
+		/* Scalar Operators */
+		const vector3 operator/ (const long double num) const {
+			vector3 result = *this;
+			result.setX(result.getX() /= num);
+			result.setY(result.getY() /= num);
+			result.setZ(result.getZ() /= num);
+			return result;
+		}
+};
+ 
+// get a vector with a given length and angle of elevation (X/Z)
+vector3 vectorWithLengthAndElevation(unsigned long length, unsigned long rads) {
+	vector3 result;
+	result.setX(cos(rads));
+	result.setZ(sin(rads));
+	return result;
 };
 
 #endif

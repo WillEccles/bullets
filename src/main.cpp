@@ -29,31 +29,37 @@ struct settings {
 	long double target_height = 0.61l; // height of the target in meters (assumed rectangular target)
 	long double target_width = 0.4l; // width of target in meters (size of target is used to determine if the shot hit
 	long double bullet_mass = grainsToGrams(200.0l) * KG_PER_GRAM; // mass of the bullet, measured in kilograms (this can be converted with grainsToGrams() for this purpose)
-	long double vel_bullet = 1005.0l; // muzzle velocity of the bullet in m/s
+	long double vel_muzzle = 1005.0l; // muzzle velocity of the bullet in m/s
 	long double humidity = 0.25l; // relative humidity of the air (0.0 to 1.0)
 	long double temperature = 30.0l; // temperature of the air (degrees C)
-	long double coef_ballistic = 1.0l; // 1.0 is essentially a perfect coefficient, so drag makes no difference
-	long double wind_y = 0.0l; // wind on the Y axis
-	long double wind_x = 0.0l; // wind on the X axis
-	long double wind_z = 0.0l; // wind on the Z axis
+	long double coef_ballistic = 0.3l; // depends on the bullet
+	long double wind_y = 0.0l; // wind on the Y axis (m/s) (positive is right to left)
+	long double wind_x = 0.0l; // wind on the X axis (m/s) (positive is away from shooter)
+	long double wind_z = 0.0l; // wind on the Z axis (m/s) (positive is up, this is likely about 0)
 } sim_settings;
 
 void simulate() {
 	// this is where we do the stuff
 	// just print the state of the bullet at every whole second after leaving the muzzle (and if there's a fractional number of seconds at the end, list that too
+	steady_clock::time_point starttime = steady_clock::now();
 	long double dist_target = sim_settings.distance;
-	int second = 1;
+	steady_clock::time_point tick = steady_clock::now() - milliseconds(1);
+	vector3 bullet_loc(0.0l, 0.0l, 0.0l);
+	vector3 velocity = vectorWithLengthAndElevation(vel_muzzle, /*TODO*/ angle);
 	while (dist_target >= 0.0l) {
-		
+		if (duration_cast<milliseconds>(steady_clock::now() - tick).count() >= 1) {
+			// do stuff
+			// here we should update the bullet's location with all the stuff
+			bullet_loc += (vectorWithLengthAndElevation(vel_muzzle, ) + (GRAV_VEC/1000.0l);
+
+			// set this after doing stuff
+			tick = steady_clock::now();
+		}
 	}
+	std::cout << "Took " << duration_cast<double>(steady_clock::now() - starttime).count() << "seconds.\n";
 }
 
 int main(void) {
-	/* TODO:
-	 * 1. read input somehow, not sure yet
-	 * 2. setup simulation
-	 * 3. run simulation
-	 * 4. spit out results
-	 */
 	simulate();
+	return 0;
 };
