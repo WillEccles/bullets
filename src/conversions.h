@@ -14,8 +14,8 @@ const long double MOLAR_MASS_WATER_VAPOR = 0.018016l; // kg/mol
 const long double UNIV_GAS_CONSTANT = 8.31447l; // J/(K*mol)
 const long double GAS_CONSTANT_WATER_VAPOR = 461.495l; // J/(kg*K)
 
-const long double GRAVITY = 9.80665l; // m/s^2
-const vector3 GRAV_VEC(0.0l, 0.0l, -(GRAVITY));
+const long double G = 9.80665l; // m/s^2
+const vector3 GRAV_VEC(0.0l, 0.0l, -(G));
 
 long double grainsToGrams(long double grains) {
 	return (grains * MG_PER_GRAIN) / MG_PER_GRAM;
@@ -27,7 +27,7 @@ long double cToK(long double celcius) {
 
 // get the pressure (Pa) at a given altitude H in meters from sea level
 long double pressureAtAltitude(long double H) {
-	return (101.325l * pow((1.0l - (0.0065l * H)/(288.15l)), (GRAVITY * MOLAR_MASS_DRY_AIR)/(UNIV_GAS_CONSTANT * 0.0065l))) * 0.001l;
+	return (101.325l * pow((1.0l - (0.0065l * H)/(288.15l)), (G * MOLAR_MASS_DRY_AIR)/(UNIV_GAS_CONSTANT * 0.0065l))) * 0.001l;
 }
 
 // gets the density of the air in kg/m^3 for a given relative humidity
@@ -61,6 +61,30 @@ long double dragCoefficient(long double BC, long double M, long double A) {
 // CD = coefficient of drag
 long double dragForce(long double p, long double A, long double u, long double CD) {
 	return 0.5l * p * A * u * u * CD;
+}
+
+// get the angle of elevation given a range of zero, a speed, and the altitude of the target and the shooter
+// R = range in meters
+// AS = altitude of the shooter in meters
+// AT = altitude of the target in meters
+// V = the speed of the bullet
+long double elevationAngle(long double R, long double AS, long double AT, long double V) {
+	if (R == 0.0l) return 0.0l;
+	long double alt_t = AT-AS; // adjust so that the shooter is at 0,0
+	long double alt_s = 0.0l;
+	long double v_2 = pow(V, 2.0l); // do powers first for efficiency
+	long double v_4 = pow(V, 4.0l);
+	long double num_sqrt = sqrt(v_4 - G*(G*R + 2.0l*alt_t*v_2)); // do this only once
+	long double r_plus = atan((v_2 + num_sqrt)/(G*R));
+	long double r_minus = atan((v_2 - num_sqrt)/(G*R));
+	// one of these angles is the right one, it may be positive or negative
+	// first check if they're both NaN in which case there is no way for it to work because the projectile can't get there
+	if (isnan(r_plus) && isnan(r_minus))
+		return nanl("");
+	else if (isnan(r_plus))
+		return r_minus;
+	else
+		return r_plus;
 }
 
 #endif
