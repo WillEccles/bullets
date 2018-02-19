@@ -69,7 +69,7 @@ class vector3 {
 		}
 };
  
-// get a vector with a given length and angle of elevation (X/Z)
+// get a vector with a given length and angle of elevation (X/Z) in radians
 vector3 vectorWithLengthAndElevation(unsigned long length, unsigned long rads) {
 	vector3 result;
 	result.setX(cos(rads));

@@ -21,7 +21,7 @@ struct settings {
 	long double distance = 100.0l; // this is set in meters, straight along the X axis
 	long double angle = 0.0l; // angle of elevation, set in mrads (1 radian = 180/pi, 1 mrad = 1/1000 of a radian)
 	long double scope_mount_angle = 0.0l; // measured in mils, likely 0
-	long double zero_distance = 100.0l; // measured in meters
+	long double zero_distance = 0.0l; // measured in meters
 	long double wind_correction = 0.0l; // measured in mils
 	long double drop_correction = 0.0l; // measured in mils
 	long double altitude_shooter = 0.0l; // altitude of the shooter in meters (0 being sea level)
@@ -45,12 +45,19 @@ void simulate() {
 	long double dist_target = sim_settings.distance;
 	steady_clock::time_point tick = steady_clock::now() - milliseconds(1);
 	vector3 bullet_loc(0.0l, 0.0l, 0.0l);
-	vector3 velocity = vectorWithLengthAndElevation(vel_muzzle, /*TODO*/ angle);
+	// divide lots of things by 1000 since we're going from m/s to mm/ms
+	vector3 velocity = vectorWithLengthAndElevation(vel_muzzle/1000.0l, 0.0l);
+	vector3 airResistance(0.0l, 0.0l, 0.0l);
+	long double maxAlt = 0.0l;
 	while (dist_target >= 0.0l) {
 		if (duration_cast<milliseconds>(steady_clock::now() - tick).count() >= 1) {
 			// do stuff
 			// here we should update the bullet's location with all the stuff
-			bullet_loc += (vectorWithLengthAndElevation(vel_muzzle, ) + (GRAV_VEC/1000.0l);
+			velocity += airResistance;
+			bullet_loc += velocity + (GRAV_VEC/1000.0l);
+
+			if (bullet_loc.getZ() > maxAlt)
+				maxAlt = bullet_loc.getZ();
 
 			// set this after doing stuff
 			tick = steady_clock::now();
