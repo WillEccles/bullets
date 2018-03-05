@@ -17,6 +17,8 @@ const long double GAS_CONSTANT_WATER_VAPOR = 461.495l; // J/(kg*K)
 const long double G = 9.80665l; // m/s^2
 const vector3 GRAV_VEC(0.0l, 0.0l, -(G));
 
+const long double PI = acos(-1.0l);
+
 long double grainsToGrams(long double grains) {
 	return (grains * MG_PER_GRAIN) / MG_PER_GRAM;
 }
@@ -85,6 +87,23 @@ long double elevationAngle(long double R, long double AS, long double AT, long d
 		return r_minus;
 	else
 		return r_plus;
+}
+
+// Displacement in X over a given interval (in meters)
+// V_i = initial velocity of the bullet in the current time interval
+// t = length of the time interval (seconds)
+// B_c = ballistic coefficient (kg/m^2)
+// p = air pressure (kg/m^3)
+// V_b = bullet velocity (m/s)
+// V_w = wind velocity in X direction (m/s)
+// d = diameter of bullet (m)
+// m = mass of bullet (kg)
+long double D_x(long double V_i, long double t, long double B_c, long double p, long double V_b, long double V_w, long double d, long double m) {
+	return (V_i * t) - (((1.0l/(4.0l*B_c)) * p * (pow(V_b, 2.0l) - ((abs(V_w)/V_w) * pow(V_w, 2.0l) * (B_c * PI * pow(d/2.0l, 2.0l) / m)))) * pow(t, 2.0l));
+}
+// get the final velocity in X direction after the time interval (used as the initial one in C_x)
+long double V_fx(long double V_i, long double t, long double B_c, long double p, long double V_b, long double V_w, long double d, long double m) {
+	return V_i - (((1.0l/(4.0l*B_c)) * p * (pow(V_b, 2.0l) - ((abs(V_w)/V_w) * pow(V_w, 2.0l) * (B_c * PI * pow(d/2.0l, 2.0l) / m)))) * t);
 }
 
 #endif
